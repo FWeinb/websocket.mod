@@ -34,15 +34,20 @@ Type TWebSocket
 	Method Run()
 		Local Join:TTCPStream =  Self.Server.Accept()
 		If Join Then 
-			Print "New client joined"					
+			?Debug
+				Print "New client joined"					
+			?
 			Local Client:TClient = TClient.Create(Join)	
 			Protocol.ClientList.AddLast(Client)
 		End If 
 		
 		For Local Client:TClient = EachIn Protocol.ClientList
 				If Client.Stream.GetState() <> 1 Then 
-					Print "--Disconnect"
-					Print "- IP:"+Client.IP
+				
+					?Debug
+						Print "--Disconnect"
+						Print "- IP:"+Client.IP
+					?
 					Client.Stream.Close()
 					Protocol.ClientList.Remove(Client)
 					Continue
