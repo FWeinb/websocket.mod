@@ -1,8 +1,8 @@
 WebSocket written in BlitzMax
 =============================
 
-This is a small project of mine implementing a WebSocket as descriped [here][spec]. 
-The Server is build on [Vertex.BNetEx][BNetEx] 
+This is a small project implementing a WebSocket as descriped [here][spec]. 
+The Server is build upon [Vertex.BNetEx][BNetEx] 
 
 
 
