@@ -113,7 +113,7 @@ Type TWebSocket
 End Type
 
 Rem
-bbdoc: The abstrct protocol you have to implement on
+bbdoc: The abstract protocol you have to implement.
 End Rem 
 Type TProtocol Abstract
 	Field Name:String
@@ -157,11 +157,12 @@ Type TClient
 
 	Method Send(Str:String)
 		Self.Stream.WriteString(Chr(0)+Str+Chr(255))
+		While Self.Stream.SendMsg(); Wend 
 	End Method 
 	
 End Type
 
-Function Hex:String( val:Int )   ' From brl.Retro
+Function Hex:String( val:Int )   ' Borrowed from brl.Retro
 	Local buf:Short[8]
 	For Local k:Int =7 To 0 Step -1
 		Local n:Int=(val&15)+Asc("0")
@@ -185,8 +186,15 @@ Function GetHandshake:String(Key1:String, Key2:String, Key3:String)
 	Return toRawBinary(MD5(packN(Int(Key1))+packN(Int(Key2))+Key3))
 End Function 
 
+Function toRawBinary:String(in:String)
+ Local out:String
+ For Local i:Int = 0 Until in.Length Step 2
+  out:+Chr(Int("$" + Chr(in[i])) * 16 + Int("$" + Chr(in[i + 1])))
+ Next
+ Return out
+End Function
 
-Function packN:String(in:Int) 'Thank's to Lobby!
+Function packN:String(in:Int) 'Thank's to Lobby! flowersoft.de.ms
  Local b:Byte Ptr = Varptr(in)
  Local out:String
  For Local i:Int = 0 Until 4
@@ -194,6 +202,7 @@ Function packN:String(in:Int) 'Thank's to Lobby!
  Next
  Return out
 End Function
+
 
 Function GetAuthKey:String(Str:String)
 	Local Result:String, Spaces:Int
@@ -302,12 +311,4 @@ End Function
 Function LEHex:String(val:Int)
   Local out$ = Hex(val)  
   Return out$[6..8] + out$[4..6] + out$[2..4] + out$[0..2]
-End Function
-
-Function toRawBinary:String(in:String)
- Local out:String
- For Local i:Int = 0 Until in.Length Step 2
-  out:+Chr(Int("$" + Chr(in[i])) * 16 + Int("$" + Chr(in[i + 1])))
- Next
- Return out
 End Function

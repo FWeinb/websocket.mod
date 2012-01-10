@@ -1,0 +1,43 @@
+<title>WebSocket Chat Test</title>
+<meta charset=UTF-8 />
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.js"></script>
+
+<br />
+<form name="chat" />
+    <textarea cols="100" rows="20" id="chat"></textarea><br />
+    <input type="text" id="text" />
+    <input type="submit" value="Send">
+</form>
+<script>
+$(function(){
+    var UserName = prompt("Username:", "");
+
+     // Let us open a web socket
+     var ws = new WebSocket("ws://127.0.0.1:8080/");
+
+     ws.onopen = function()
+     {
+        // Web Socket is connected, send data using send()
+         ws.send("name|"+UserName); // Say Hello...
+     };
+     ws.onmessage = function (evt) 
+     { 
+         var $chat = $("#chat");
+         var txt =  $chat.val();
+         $chat.val(txt+evt.data+"\n");
+     };
+     ws.onclose = function()
+     { 
+        // do noting...
+     };
+    
+    $('form').submit(function(e){
+       var text = $('#text').val();
+       $('#text').val('');
+       var $chat = $('#chat');
+       ws.send(text);
+       $chat.val($chat.val()+UserName+": "+text+"\n");
+       e.preventDefault();
+    });
+});
+</script>
