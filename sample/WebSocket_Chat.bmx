@@ -5,7 +5,7 @@ Import fab.websocket
 
 Local 	Timer:TTimer = CreateTimer(60)
 Local 	Protocol:TChat_Protocol = New TChat_Protocol
-		Protocol.Init("Chat")
+		Protocol.Init("Chat") ' Init with the Name of the WebSocket-Protocol
 Local 	WebSocket:TWebSocket = TWebSocket.Create(Protocol)
 
 While Not AppTerminate()
@@ -16,19 +16,18 @@ Wend
 
 Type TChat_Protocol Extends TProtocol
 
+
 	Method Respond(Msg:String, Client:TClient)
-				If Msg.Contains(":") Then 
-					Local Part:String[] = SplitFirst(Msg,":", 1)
+				If Msg.Contains("|") Then 
+					Local Part:String[] = SplitFirst(Msg,"|", 1)
 					Select Part[0]
 						Case "name"
 							Client.User = String(Part[1])
 							Client.Send("Server: Wilkommen "+String(Client.User))
-							While Client.Stream.SendMsg(); Wend
 							Local Name:String = String(Client.User)
 							For Local OtherClient:TClient = EachIn Self.ClientList
 								If Client <> OtherClient Then 
 									OtherClient.Send(Name + " joined")
-									While OtherClient.Stream.SendMsg(); Wend
 								End If  
 							Next		
 								
@@ -38,7 +37,6 @@ Type TChat_Protocol Extends TProtocol
 					For Local OtherClient:TClient = EachIn Self.ClientList
 						If Client <> OtherClient Then 
 							OtherClient.Send(Name+": "+Msg)
-							While OtherClient.Stream.SendMsg(); Wend
 						End If  
 					Next			
 				EndIf
