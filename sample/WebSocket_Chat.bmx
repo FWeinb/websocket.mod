@@ -16,10 +16,9 @@ Wend
 
 Type TChat_Protocol Extends TProtocol
 
-
 	Method Respond(Msg:String, Client:TClient)
-				If Msg.Contains("|") Then 
-					Local Part:String[] = SplitFirst(Msg,"|", 1)
+				If Msg.Contains(Chr(0)) Then 
+					Local Part:String[] = SplitFirst(Msg,Chr(0), 1)
 					Select Part[0]
 						Case "name"
 							Client.User = String(Part[1])

@@ -18,7 +18,7 @@ $(function(){
      ws.onopen = function()
      {
         // Web Socket is connected, send data using send()
-         ws.send("name|"+UserName); // Say Hello...
+         ws.send("name"+String.fromCharCode(0)+UserName); // Say Hello...
      };
      ws.onmessage = function (evt) 
      { 
@@ -28,7 +28,9 @@ $(function(){
      };
      ws.onclose = function()
      { 
-        // do noting...
+         var $chat = $("#chat");
+         var txt =  $chat.val();
+         $chat.val(txt+"Close\n");
      };
     
     $('form').submit(function(e){
