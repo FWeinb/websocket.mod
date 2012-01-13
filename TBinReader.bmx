@@ -1,5 +1,6 @@
 SuperStrict 
 
+
 Import Brl.StandardIO
 
 Type TBinReader

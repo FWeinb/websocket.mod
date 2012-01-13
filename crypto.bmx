@@ -1,5 +1,6 @@
 SuperStrict
 
+
 Function Hex:String( val:Int )   ' Borrowed from brl.Retro
 	Local buf:Short[8]
 	For Local k:Int =7 To 0 Step -1

@@ -12,8 +12,13 @@
 $(function(){
     var UserName = prompt("Username:", "");
 
+         var ws
      // Let us open a web socket
-     var ws = new WebSocket("ws://127.0.0.1:8080/");
+     if(window.WebSocket){
+        ws=new WebSocket("ws://localhost:8080/");
+     }else{
+        ws=new MozWebSocket("ws://localhost:8080/");
+     }
 
      ws.onopen = function()
      {

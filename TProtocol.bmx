@@ -1,4 +1,5 @@
 SuperStrict
+
 Import brl.LinkedList
 Import "TClient.bmx"
 Rem
