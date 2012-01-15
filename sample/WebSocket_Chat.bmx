@@ -1,4 +1,4 @@
- SuperStrict
+SuperStrict
 
 Import brl.Timer
 Import fab.websocket
@@ -33,11 +33,15 @@ Type TChat_Protocol Extends TProtocol
 					End Select
 				Else			
 					Local Name:String = String(Client.User)
-					For Local OtherClient:TClient = EachIn Self.ClientList
-						If Client <> OtherClient Then 
-							OtherClient.Send(Name+": "+Msg)
-						End If  
-					Next			
+					If Msg = "end" Then 
+						Client.Close("OK")					
+					Else 
+						For Local OtherClient:TClient = EachIn Self.ClientList
+							If Client <> OtherClient Then 
+								OtherClient.Send(Name+": "+Msg)
+							End If  
+						Next	
+					End If 		
 				EndIf
 	End Method 
 End Type

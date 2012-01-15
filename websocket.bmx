@@ -18,7 +18,8 @@ Import "TProtocol.bmx"
 Import "TBinReader.bmx"
 Import "crypto.bmx"
 
-Const MAGIC_KEY:String="258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+
+Const MAGIC_KEY:String = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
 Rem
 bbdoc: Main Type
@@ -63,26 +64,26 @@ Type TWebSocket
 						
 						Client.FlushSend()
 						
-							If Client.Stream.Size() > 0 Then 
-								If Client.binaryMode = True Then 	
-									Local by:Byte[Client.Stream.Size()] 
-									For Local i:Int = 0 To Client.Stream.Size()-1
-										by[i] = Client.Stream.ReadByte()
-									Next
-									Local Message:String = processMessage(by)
-									If Message <> Null Then 
-										Protocol.Respond(Message, Client)
-									EndIf 									
-								Else	
-									Local Line:String
-									While Not Client.Stream.Eof()
-										Line = Client.Stream.ReadLine()
-										Select Line[..Line.Find(" ")]
-											Case "GET"
-												Self.doHandshake(Client)
-										End Select	
-									Wend  							
-							
+						If Client.Stream.Size() > 0 Then 
+							If Client.inBinaryMode() Then 	
+								Local by:Byte[Client.Stream.Size()] 
+								For Local i:Int = 0 To Client.Stream.Size()-1
+									by[i] = Client.Stream.ReadByte()
+								Next
+								Local Message:String = processMessage(by, Client)
+								If Message <> Null Then 
+									Protocol.Respond(Message, Client)
+								EndIf 									
+							Else	
+								Local Line:String
+								While Not Client.Stream.Eof()
+									Line = Client.Stream.ReadLine()
+									Select Line[..Line.Find(" ")]
+										Case "GET"
+											Self.doHandshake(Client)
+									End Select	
+								Wend  							
+						
 							End If 
 						End If 	
 				EndIf 
@@ -132,39 +133,41 @@ Type TWebSocket
 	End Method
 End Type
 
-'This Function will be moved!
-Function processMessage:String(Message:Byte[])
-	Local payloadData:String
+'This Function might be moved!
+Function processMessage:String(Message:Byte[], client:TClient)
+	Local payloadData:String = Null 
 	Local reader:TBinReader = TBinReader.Create(Message)
 	Local isMasked:Byte = False
 	If (reader.readNextBit() = 1) Then 
 		If reader.readRangeBin(3) = "000" Then 
 			Local opCode:Byte = reader.getByte()
-			isMasked = reader.readNextBit()
 			
-			Local payloadStart:Int = reader.getCurrentPos()
-			Local payloadLength:Long = reader.getRangeLong(7)
-			If payloadLength = 126 Then 
-				reader.seek(payloadStart)
-				payloadLength = reader.getRangeLong(16)
-			Else If payloadLength = 127 Then 
-				reader.seek(payloadStart)
-				payloadLength = reader.getRangeLong(64)							
-			EndIf 
+			Select opCode			
+				Case opcode_text
+					isMasked = reader.readNextBit()
 			
-			payloadLength:*8
-			
-			Local maskingKey:String 
-			If (isMasked) Then 
-				maskingKey =reader.readRangeString(32)
-			End If 
-			
-			payloadData = reader.readRangeString(payloadLength)
-			
-			If (isMasked) Then 
-				payloadData = unMask(payloadData,maskingKey)
-			End If 			
-				
+					Local payloadLength:Int = reader.getRangeInt(7)
+					If payloadLength = 126 Then 
+						payloadLength = reader.getRangeInt(16)
+					Else If payloadLength = 127 Then 
+						payloadLength = reader.getRangeInt(64)							
+					EndIf 
+					
+					payloadLength:*8
+					
+					Local maskingKey:String 
+					If (isMasked) Then 
+						maskingKey =reader.readRangeString(32)
+					End If 
+					
+					payloadData = reader.readRangeString(payloadLength)
+					
+					If (isMasked) Then 
+						payloadData = unMask(payloadData,maskingKey)
+					End If 	
+				Case opcode_binary
+					client.close("Binary Data is not supported", close_dataError)	
+			End Select			
 		End If 
 	End If
 	Return payloadData
