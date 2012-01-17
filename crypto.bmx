@@ -1,6 +1,38 @@
 SuperStrict
 
 
+
+
+Function packN:String(in:Int) 'Thank's to Lobby!
+	Local b:Byte Ptr = Varptr(in)
+	Local out:String
+ 	For Local i:Int = 0 Until 4
+  		out = Chr(b[i]) + out
+ 	Next
+ 	Return out
+End Function
+
+Function GetAuthKey:String(Str:String)
+	Local Result:String, Spaces:Int
+	For Local i:Int = 0 To Str.Length -1
+		If Str[i]>47 And Str[i]<58 Then 
+			Result:+Chr(Str[i])
+		ElseIf Str[i] = 32
+			Spaces:+1
+		EndIf 
+	Next
+	Return Int(Double(Result)/Spaces)
+End Function 
+
+Function toRawBinary:String(in:String)
+	Local out:String
+ 	For Local i:Int = 0 Until in.Length-1 Step 2
+  		out:+Chr(Int("$" + Chr(in[i])) * 16 + Int("$" + Chr(in[i + 1])))
+	Next
+ 	Return out
+End Function
+
+
 Function Hex:String( val:Int )   ' Borrowed from brl.Retro
 	Local buf:Short[8]
 	For Local k:Int =7 To 0 Step -1

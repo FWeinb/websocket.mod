@@ -4,8 +4,9 @@ WebSocket written in BlitzMax
 This is a small project implementing a WebSocket as descriped [here][spec]. 
 The Server is build upon [Vertex.BNetEx][BNetEx] 
 
-Now I have start implementing the Draft 13 witch is Supported by Chrome >=15 and Firefox >=7 sadly i had to drop Suport for Safari 5.1.1 (temporary?) Only the bare minimum is implemented.
 
+Now there is support for Chrome >11 (i guess) and Firefox > 7 even iOS Mobile Safari >4.3 and Safari >= 5 are supported. 
+I might clean up the messy Code. 
 
  
 
